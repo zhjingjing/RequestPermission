@@ -22,6 +22,7 @@ public class RequestUtils {
 
     private final static RequestUtils REQUEST_UTILS=new RequestUtils();
 
+    private List<String> perList;
     public static RequestUtils getInstance(){
         return REQUEST_UTILS;
     }
@@ -29,19 +30,22 @@ public class RequestUtils {
     public  void requestPermission(Activity activity,IPermissionListener iPermissionListener,String...permissions){
         this.iPermissionListener=iPermissionListener;
         this.activity=activity;
+        perList=new ArrayList<>();
 
         List<String> permissionLists=new ArrayList<>();
 
         for (String permission:permissions){
+
             if ( ContextCompat.checkSelfPermission(activity,permission)!= PackageManager.PERMISSION_GRANTED){
                 permissionLists.add(permission);
+                perList.add(permission);
             }
         }
 
         if (!permissionLists.isEmpty()){
             ActivityCompat.requestPermissions(activity,permissionLists.toArray(new String[permissionLists.size()]),REQUEST_CODE);
         }else{
-            iPermissionListener.success();
+            iPermissionListener.success(permissionLists);
         }
     }
 
@@ -62,7 +66,7 @@ public class RequestUtils {
                      if (list.size()>0){
                          iPermissionListener.cancel();
                      }else {
-                         iPermissionListener.success();
+                         iPermissionListener.success(perList);
                      }
                 }
                 break;
